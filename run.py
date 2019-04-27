@@ -7,6 +7,17 @@ import datetime
 from selenium import webdriver
 import sys
 
+BASE_AIRPORT = 'base_airport'
+TARGET_AIRPORT = 'target_airport'
+BASE_DEPART = 'base_depart'
+TARGET_ARRIVAL = 'target_arrival'
+BASE_AIRLINE = 'base_airline'
+TARGET_AIRLINE = 'target_airline'
+PRICE = 'price'
+
+CONST_CHECK_WORD = '時間'
+CONST_ADDRESS = 'http://127.0.0.1:9001/input'
+
 
 def get_date_string(param):
     """
@@ -25,6 +36,68 @@ def get_date_string(param):
     res = year + '-' + month + '-' + day
 
     return res
+
+
+'''
+origin data
+    0 - 20:05 発 22:25 着
+    1 - アシアナ航空
+    2 - 全日空
+    6 - ￥58,510
+    
+    - base_depart       yyyy/MM/dd hh:mm
+    - target_arrival    yyyy/MM/dd hh:mm
+    - base_airline      string
+    - target_airline    string
+    - base_airport      string
+    - target_airport    string
+    - price             string
+'''
+
+
+def send_request_from_crawl_string_data(data_set, base_airport, target_airport, depart_date):
+    date_info = str(depart_date.year) + "/" + str(depart_date.month) + "/" + str(depart_date.day)
+    date_info_pre = date_info + " "
+
+    for i in range(len(results)):
+        unit_data = {BASE_AIRPORT: base_airport, TARGET_AIRPORT: target_airport}
+        row_data = results[i].text.split('\n')
+        index = 0
+
+        parts = row_data[index].split(' ')
+        unit_data[BASE_DEPART] = date_info_pre + parts[0]
+        unit_data[TARGET_ARRIVAL] = date_info_pre + parts[2]
+
+        index += 1
+        unit_data[BASE_AIRLINE] = row_data[index]
+
+        index += 1
+        if CONST_CHECK_WORD in row_data[index]:
+            # same airline
+            unit_data[TARGET_AIRLINE] = unit_data[BASE_AIRLINE]
+        else:
+            # different airline
+            unit_data[TARGET_AIRLINE] = row_data[index]
+            index += 1
+
+        index += 3
+        price = row_data[index].replace('￥', '').replace(',', '')
+        unit_data[PRICE] = price
+
+        if send_get_request(CONST_ADDRESS, unit_data):
+            print('success to update')
+        else:
+            print('fail to update')
+
+
+def send_get_request(address, param):
+    import requests
+    r = requests.get(url=address, params=param)
+    status = r.status_code
+    if status == 200 or status == 204:
+        return True
+    else:
+        return False
 
 
 # if args are not valid, stop with code 1
@@ -69,8 +142,11 @@ while depart_date != end_range_date:
         try:
             best_big_container = driver.find_element_by_class_name("gws-flights-results__best-flights")
             best_container = best_big_container.find_element_by_class_name("gws-flights-results__result-list")
-            # TODO : send request to update database
-            print(best_container.text)
+
+            results = best_container.find_elements_by_class_name("gws-flights-results__collapsed-itinerary")
+
+            send_request_from_crawl_string_data(results, base_airport_code, target_airport_code, depart_date)
+
         except:
             # if it has exception, skip it
             print("fail at", depart_date, arrival_date, base_airport_code, target_airport_code)

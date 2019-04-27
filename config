@@ -1,0 +1,14 @@
+update data info
+origin data
+    0 - 20:05 発 22:25 着
+    1 - アシアナ航空
+    2 - 全日空
+    6 - ￥58,510
+
+param name
+    - base_depart       yyyy/MM/dd hh:mm
+    - target_arrival    yyyy/MM/dd hh:mm
+    - base_airline      string
+    - base_airport      string
+    - target_airport    string
+    - price             string
