@@ -138,7 +138,7 @@ while depart_date != end_range_date:
         search_url += get_date_string(arrival_date) + ";c:" + cache + ";e:1;sd:1;t:f"
 
         driver.get(search_url)
-        time.sleep(3)
+        time.sleep(2)
         try:
             best_big_container = driver.find_element_by_class_name("gws-flights-results__best-flights")
             best_container = best_big_container.find_element_by_class_name("gws-flights-results__result-list")
