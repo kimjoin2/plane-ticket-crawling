@@ -151,4 +151,5 @@ while depart_date != end_range_date:
 
         arrival_date = arrival_date + datetime.timedelta(days=1)
     depart_date = depart_date + datetime.timedelta(days=1)
-
+driver.close()
+print("done")
