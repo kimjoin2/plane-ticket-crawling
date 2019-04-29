@@ -84,10 +84,8 @@ def send_request_from_crawl_string_data(data_set, base_airport, target_airport, 
         price = row_data[index].replace('￥', '').replace(',', '')
         unit_data[PRICE] = price
 
-        if send_get_request(CONST_ADDRESS, unit_data):
-            print('success to update')
-        else:
-            print('fail to update')
+        if not send_get_request(CONST_ADDRESS, unit_data):
+            print('fail to update', unit_data[BASE_AIRLINE], unit_data[TARGET_AIRLINE])
 
 
 def send_get_request(address, param):
@@ -138,7 +136,7 @@ while depart_date != end_range_date:
         search_url += get_date_string(arrival_date) + ";c:" + cache + ";e:1;sd:1;t:f"
 
         driver.get(search_url)
-        time.sleep(2)
+        time.sleep(0.5)
         try:
             best_big_container = driver.find_element_by_class_name("gws-flights-results__best-flights")
             best_container = best_big_container.find_element_by_class_name("gws-flights-results__result-list")
