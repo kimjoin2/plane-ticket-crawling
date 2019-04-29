@@ -55,13 +55,13 @@ origin data
 '''
 
 
-def send_request_from_crawl_string_data(data_set, base_airport, target_airport, depart_date):
-    date_info = str(depart_date.year) + "/" + str(depart_date.month) + "/" + str(depart_date.day)
+def send_request_from_crawl_string_data(data_set, base_airport, target_airport, depart_date_param):
+    date_info = str(depart_date_param.year) + "/" + str(depart_date_param.month) + "/" + str(depart_date_param.day)
     date_info_pre = date_info + " "
 
-    for i in range(len(results)):
+    for i in range(len(data_set)):
         unit_data = {BASE_AIRPORT: base_airport, TARGET_AIRPORT: target_airport}
-        row_data = results[i].text.split('\n')
+        row_data = data_set[i].text.split('\n')
         index = 0
 
         parts = row_data[index].split(' ')
