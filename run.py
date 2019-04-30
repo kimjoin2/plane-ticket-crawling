@@ -15,6 +15,8 @@ BASE_AIRLINE = 'base_airline'
 TARGET_AIRLINE = 'target_airline'
 PRICE = 'price'
 
+SKIP_AIRLINE = '複数チケットをまとめて予約'
+
 CONST_CHECK_WORD = '時間'
 CONST_ADDRESS = 'http://127.0.0.1:9001/input'
 
@@ -83,6 +85,9 @@ def send_request_from_crawl_string_data(data_set, base_airport, target_airport, 
         index += 3
         price = row_data[index].replace('￥', '').replace(',', '')
         unit_data[PRICE] = price
+
+        if unit_data[BASE_AIRLINE] == SKIP_AIRLINE or unit_data[TARGET_AIRLINE] == SKIP_AIRLINE:
+            continue
 
         if not send_get_request(CONST_ADDRESS, unit_data):
             print('fail to update', unit_data[BASE_AIRLINE], unit_data[TARGET_AIRLINE])
